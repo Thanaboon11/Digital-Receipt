@@ -44,7 +44,7 @@
                 
                 <div class="flex items-center gap-3">
                     <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" 
-                        class="flex-1 p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600">
+                        class="flex-grow p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600">
                     
                     <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 min-w-[64px] rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center font-light">
                         +
@@ -53,7 +53,7 @@
             </div>
         </section>
 
-        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[35vh]"></div>
+        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[30vh]"></div>
         <p id="noData" class="text-center py-10 text-slate-300 text-sm italic">ยังไม่มีรายการบันทึก...</p>
 
         <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md">
@@ -71,16 +71,20 @@
 
         <div id="receiptUI" class="hidden bg-white p-8 rounded-[3.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
+            
             <div class="text-center mb-8">
                 <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">Receipt Summary</h2>
                 <p id="resDate" class="text-[9px] text-slate-400 font-bold mt-1 uppercase"></p>
             </div>
+
             <div id="receiptRows" class="space-y-3 mb-6 border-b border-dashed border-slate-200 pb-6"></div>
+
             <div class="space-y-6">
                 <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
                     <span>ยอดรวม</span>
-                    <span id="resSum" class="text-slate-900">0.00</span>
+                    <span id="resSum" class="text-slate-900 font-bold">0.00</span>
                 </div>
+                
                 <div class="bg-blue-50 rounded-[2.5rem] p-8 text-center border border-blue-100">
                     <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-1">จ่ายคนละ</p>
                     <div class="flex items-center justify-center gap-1">
@@ -89,9 +93,10 @@
                     </div>
                 </div>
             </div>
-            <div id="actionButtons" class="mt-8 space-y-3">
+
+            <div id="actionButtons" class="mt-10 space-y-3">
                 <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
-                    💾 บันทึกรูปใบเสร็จ
+                    📸 บันทึกรูปใบเสร็จลงเครื่อง
                 </button>
                 <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูล</button>
             </div>
@@ -101,29 +106,32 @@
 
     <script>
         let myItems = [];
+
         function addToList() {
             const t = document.getElementById('nodeTitle');
             const p = document.getElementById('nodePrice');
             if (!t.value || !p.value) return;
-            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) });
-            t.value = ''; p.value = ''; t.focus();
+
+            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) }); 
+            t.value = ''; p.value = ''; t.focus(); 
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
+
         function updateDisplay() {
             const container = document.getElementById('dataTable');
             const noData = document.getElementById('noData');
             if (myItems.length === 0) {
                 container.innerHTML = '';
-                noData.style.display = 'block';
+                noData.style.display = 'block'; 
                 return;
             }
-            noData.style.display = 'none';
+            noData.style.display = 'none'; 
             container.innerHTML = myItems.map((item) => `
                 <div class="bg-white p-5 rounded-3xl shadow-sm flex items-center justify-between border border-slate-50 mb-3">
                     <div>
                         <div class="font-bold text-slate-800 text-lg">${item.title}</div>
-                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Recorded</div>
+                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Confirmed</div>
                     </div>
                     <div class="flex items-center gap-4">
                         <span class="font-[900] text-blue-500 text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
@@ -132,40 +140,53 @@
                 </div>
             `).join('');
         }
+
         function removeItem(id) {
-            myItems = myItems.filter(x => x.id !== id);
+            myItems = myItems.filter(x => x.id !== id); 
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
+
         function changePax(v) {
             const inp = document.getElementById('paxValue');
-            let res = parseInt(inp.value) + v;
-            if(res < 1) res = 1;
+            let res = parseInt(inp.value) + v; 
+            if(res < 1) res = 1; 
             inp.value = res;
         }
+
         function showFinalReceipt() {
-            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ');
-            const pax = parseInt(document.getElementById('paxValue').value) || 1;
-            const total = myItems.reduce((s, i) => s + i.price, 0);
+            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ'); 
+            const pax = parseInt(document.getElementById('paxValue').value) || 1; 
+            const total = myItems.reduce((s, i) => s + i.price, 0); 
+            
             document.getElementById('receiptRows').innerHTML = myItems.map(i => `
                 <div class="flex justify-between text-sm font-bold">
                     <span class="text-slate-500">${i.title}</span>
                     <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
                 </div>
             `).join('');
-            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH');
+            
+            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2}); 
+            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2}); 
+            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH'); 
+
             const ui = document.getElementById('receiptUI');
             ui.classList.remove('hidden');
             ui.scrollIntoView({ behavior: 'smooth' });
         }
+
         async function takeScreenshot() {
             const actions = document.getElementById('actionButtons');
-            actions.classList.add('hide-in-photo');
+            actions.classList.add('hide-in-photo'); // ซ่อนปุ่มไม่ให้ติดในรูปภาพ
+            
             const element = document.getElementById('receiptUI');
             try {
-                const canvas = await html2canvas(element, { scale: 3, backgroundColor: "#ffffff", borderRadius: 56, useCORS: true });
+                const canvas = await html2canvas(element, {
+                    scale: 3,
+                    backgroundColor: "#ffffff",
+                    borderRadius: 56,
+                    useCORS: true
+                });
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL("image/png");
                 link.download = `DaySplit-${Date.now()}.png`;
@@ -173,7 +194,7 @@
             } catch (err) {
                 alert('การบันทึกขัดข้อง');
             } finally {
-                actions.classList.remove('hide-in-photo');
+                actions.classList.remove('hide-in-photo'); // แสดงปุ่มกลับมาหลังบันทึกเสร็จ
             }
         }
     </script>

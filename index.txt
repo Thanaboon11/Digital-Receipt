@@ -2,100 +2,103 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DaySplit">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/10342/10342261.png">
     
-    <title>DaySplit Accent Edition</title>
-    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+
+    <title>DaySplit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700;800&display=swap');
-        body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color: #1a1a1a; -webkit-tap-highlight-color: transparent; }
-        .item-text { color: #000000 !important; font-weight: 700; }
-        .price-text { color: #2563eb !important; font-weight: 800; }
-        /* คลาสสำหรับซ่อนองค์ประกอบที่ไม่ต้องการให้ติดไปในรูปภาพ */
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;900&display=swap');
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #334155; -webkit-tap-highlight-color: transparent; }
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .tap-effect:active { transform: scale(0.96); transition: 0.1s; }
         .hide-in-photo { display: none !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="p-4 sm:p-10 pb-20">
+<body class="p-4 sm:p-8 safe-top">
 
-    <div class="max-w-xl mx-auto space-y-6">
+    <div class="max-w-md mx-auto space-y-6">
         
-        <header id="mainHeader" class="bg-blue-50 border-l-8 border-blue-500 p-6 rounded-r-2xl shadow-sm">
-            <h1 class="text-3xl font-black text-blue-900">DaySplit</h1>
-            <p class="text-blue-600 text-sm font-bold uppercase tracking-widest">บันทึกยอดและสรุปใบเสร็จ</p>
+        <header class="flex justify-between items-center py-4">
+            <div>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Day<span class="text-blue-500">Split</span></h1>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Bill & Receipt Manager</p>
+            </div>
+            <img src="icon.png" class="w-14 h-14 rounded-2xl shadow-lg border-2 border-white bg-white">
         </header>
 
-        <section id="inputSection" class="bg-white border-2 border-slate-100 rounded-[2rem] p-6 shadow-sm">
+        <section class="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 border border-white space-y-4">
             <div class="space-y-4">
-                <input type="text" id="nodeTitle" placeholder="พิมพ์ชื่อรายการ..." class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-400 outline-none font-bold text-lg">
-                <div class="flex gap-2">
-                    <input type="number" id="nodePrice" placeholder="ราคา 0.00" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-400 outline-none font-black text-2xl text-blue-600">
-                    <button onclick="addToList()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 rounded-2xl font-bold text-3xl transition-all active:scale-95 shadow-lg shadow-blue-100">+</button>
+                <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" 
+                    class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-semibold text-lg">
+                
+                <div class="flex items-center gap-3">
+                    <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" 
+                        class="flex-grow p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600">
+                    
+                    <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 min-w-[64px] rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center font-light">
+                        +
+                    </button>
                 </div>
             </div>
         </section>
 
-        <section id="listSection" class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div class="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-                <span class="font-bold text-slate-500 uppercase text-xs tracking-widest">รายการที่บันทึก</span>
-                <span id="count" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">0</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <tbody id="dataTable"></tbody>
-                </table>
-                <p id="noData" class="text-center py-10 text-slate-300 italic">ยังไม่มีรายการ...</p>
-            </div>
-        </section>
+        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[30vh]"></div>
+        <p id="noData" class="text-center py-10 text-slate-300 text-sm italic">ยังไม่มีรายการบันทึก...</p>
 
-        <section id="paxSection" class="bg-emerald-50 border-2 border-emerald-100 rounded-[2rem] p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <span class="font-bold text-emerald-800 italic">หารกี่คน?</span>
-            <div class="flex items-center bg-white rounded-xl border-2 border-emerald-200 overflow-hidden">
-                <button onclick="changePax(-1)" class="w-12 h-12 flex items-center justify-center font-bold text-2xl text-emerald-500 hover:bg-emerald-50">-</button>
-                <input type="number" id="paxValue" value="1" min="1" class="w-16 text-center font-black text-2xl outline-none text-emerald-700">
-                <button onclick="changePax(1)" class="w-12 h-12 flex items-center justify-center font-bold text-2xl text-emerald-500 hover:bg-emerald-50">+</button>
+        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md">
+            <span class="font-bold text-slate-500 ml-2">หารกี่คน?</span>
+            <div class="flex items-center gap-4 bg-slate-100 rounded-2xl p-1">
+                <button onclick="changePax(-1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">-</button>
+                <input type="number" id="paxValue" value="1" min="1" class="w-10 text-center font-black text-xl bg-transparent outline-none text-slate-700">
+                <button onclick="changePax(1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">+</button>
             </div>
-        </section>
+        </div>
 
-        <button id="btnSummary" onclick="showFinalReceipt()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-[2rem] text-xl hover:bg-black transition-all shadow-xl">
+        <button onclick="showFinalReceipt()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-[2.2rem] text-xl shadow-xl tap-effect">
             📋 ออกใบเสร็จสรุปยอด
         </button>
 
-        <div id="receiptUI" class="hidden bg-white border-4 border-blue-500 p-8 rounded-[2rem] shadow-2xl">
-            <div class="text-center border-b-2 border-slate-100 pb-4 mb-6">
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">RECEIPT</h2>
-                <p id="resDate" class="text-[10px] text-slate-400 font-bold mt-1"></p>
+        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
+            
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">Receipt Summary</h2>
+                <p id="resDate" class="text-[9px] text-slate-400 font-bold mt-1 uppercase"></p>
             </div>
 
-            <div id="receiptRows" class="space-y-3 mb-8"></div>
+            <div id="receiptRows" class="space-y-3 mb-6 border-b border-dashed border-slate-200 pb-6"></div>
 
-            <div class="border-t-2 border-dashed border-slate-200 pt-6 space-y-2">
-                <div class="flex justify-between font-bold text-slate-400 text-sm uppercase">
-                    <span>ยอดรวมทั้งหมด</span>
-                    <span id="resSum" class="text-slate-800">0.00</span>
-                </div>
-                <div class="flex justify-between font-bold text-slate-400 text-sm uppercase border-b border-slate-100 pb-2">
-                    <span>จำนวนคนหาร</span>
-                    <span id="resPax" class="text-slate-800">1</span>
+            <div class="space-y-6">
+                <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
+                    <span>ยอดรวม</span>
+                    <span id="resSum" class="text-slate-900 font-bold">0.00</span>
                 </div>
                 
-                <div class="pt-6 flex justify-between items-end">
-                    <span class="font-black text-blue-500 uppercase">จ่ายคนละ:</span>
-                    <span id="resFinal" class="text-5xl font-black text-slate-900 underline decoration-blue-200 decoration-8">0.00</span>
+                <div class="bg-blue-50 rounded-[2.5rem] p-8 text-center border border-blue-100">
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-1">จ่ายคนละ</p>
+                    <div class="flex items-center justify-center gap-1">
+                        <span id="resFinal" class="text-6xl font-[900] text-slate-900 tracking-tighter">0.00</span>
+                        <span class="text-xl font-bold text-blue-500 italic">฿</span>
+                    </div>
                 </div>
             </div>
 
-            <div id="actionButtons" class="mt-8 space-y-3">
-                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl hover:bg-emerald-600 shadow-lg flex items-center justify-center gap-2">
-                    📸 บันทึกเป็นรูปภาพลงเครื่อง
+            <div id="actionButtons" class="mt-10 space-y-3">
+                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
+                    📸 บันทึกรูปใบเสร็จลงเครื่อง
                 </button>
-                <button onclick="window.location.reload()" class="w-full text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูล (Reset)</button>
+                <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูล</button>
             </div>
         </div>
 
@@ -109,108 +112,89 @@
             const p = document.getElementById('nodePrice');
             if (!t.value || !p.value) return;
 
-            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) });
-            t.value = ''; p.value = ''; t.focus();
+            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) }); 
+            t.value = ''; p.value = ''; t.focus(); 
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
 
         function updateDisplay() {
-            const body = document.getElementById('dataTable');
+            const container = document.getElementById('dataTable');
             const noData = document.getElementById('noData');
-            document.getElementById('count').innerText = myItems.length;
-
             if (myItems.length === 0) {
-                body.innerHTML = '';
-                noData.style.display = 'block';
+                container.innerHTML = '';
+                noData.style.display = 'block'; 
                 return;
             }
-
-            noData.style.display = 'none';
-            body.innerHTML = myItems.map((item, index) => `
-                <tr class="border-b border-slate-50">
-                    <td class="p-5">
-                        <div class="item-text text-lg">${item.title}</div>
-                        <div class="text-[10px] text-slate-400 font-bold uppercase">Item #${index+1}</div>
-                    </td>
-                    <td class="p-5 text-right">
-                        <span class="price-text text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
-                    </td>
-                    <td class="p-5 text-center action-col">
-                        <button onclick="removeItem(${item.id})" class="text-slate-300 hover:text-red-500 text-xl">🗑</button>
-                    </td>
-                </tr>
+            noData.style.display = 'none'; 
+            container.innerHTML = myItems.map((item) => `
+                <div class="bg-white p-5 rounded-3xl shadow-sm flex items-center justify-between border border-slate-50 mb-3">
+                    <div>
+                        <div class="font-bold text-slate-800 text-lg">${item.title}</div>
+                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Confirmed</div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-[900] text-blue-500 text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                        <button onclick="removeItem(${item.id})" class="text-slate-200 text-2xl px-2">✕</button>
+                    </div>
+                </div>
             `).join('');
         }
 
         function removeItem(id) {
-            myItems = myItems.filter(x => x.id !== id);
+            myItems = myItems.filter(x => x.id !== id); 
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
 
         function changePax(v) {
             const inp = document.getElementById('paxValue');
-            let res = parseInt(inp.value) + v;
-            if(res < 1) res = 1;
+            let res = parseInt(inp.value) + v; 
+            if(res < 1) res = 1; 
             inp.value = res;
         }
 
         function showFinalReceipt() {
-            if (myItems.length === 0) return alert('กรุณากรอกข้อมูลก่อนครับ');
-            const pax = parseInt(document.getElementById('paxValue').value) || 1;
-            const total = myItems.reduce((s, i) => s + i.price, 0);
+            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ'); 
+            const pax = parseInt(document.getElementById('paxValue').value) || 1; 
+            const total = myItems.reduce((s, i) => s + i.price, 0); 
             
             document.getElementById('receiptRows').innerHTML = myItems.map(i => `
-                <div class="flex justify-between font-bold text-slate-600 italic">
-                    <span>${i.title}</span>
-                    <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})} ฿</span>
+                <div class="flex justify-between text-sm font-bold">
+                    <span class="text-slate-500">${i.title}</span>
+                    <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
                 </div>
             `).join('');
             
-            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2}) + ' ฿';
-            document.getElementById('resPax').innerText = pax + ' คน';
-            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH');
+            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2}); 
+            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2}); 
+            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH'); 
 
             const ui = document.getElementById('receiptUI');
             ui.classList.remove('hidden');
             ui.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // ฟังก์ชันถ่ายภาพใบเสร็จ
         async function takeScreenshot() {
-            const btn = document.querySelector('button[onclick="takeScreenshot()"]');
             const actions = document.getElementById('actionButtons');
-            
-            // ซ่อนปุ่มก่อนถ่าย
-            actions.classList.add('hide-in-photo');
+            actions.classList.add('hide-in-photo'); // ซ่อนปุ่มไม่ให้ติดในรูปภาพ
             
             const element = document.getElementById('receiptUI');
-            
             try {
                 const canvas = await html2canvas(element, {
-                    scale: 3, // ความชัดระดับ 3x
+                    scale: 3,
                     backgroundColor: "#ffffff",
-                    borderRadius: 32,
-                    useCORS: true,
-                    logging: false
+                    borderRadius: 56,
+                    useCORS: true
                 });
-                
-                // สร้างลิงก์ดาวน์โหลด
-                const image = canvas.toDataURL("image/png");
                 const link = document.createElement('a');
-                link.href = image;
-                link.download = `DaySplit-Receipt-${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.download = `DaySplit-${Date.now()}.png`;
                 link.click();
-                
-                alert('บันทึกรูปภาพเรียบร้อยแล้ว!');
             } catch (err) {
-                alert('เกิดข้อผิดพลาดในการบันทึกรูปภาพ');
-                console.error(err);
+                alert('การบันทึกขัดข้อง');
             } finally {
-                // เอากลุ่มปุ่มกลับคืนมา
-                actions.classList.remove('hide-in-photo');
+                actions.classList.remove('hide-in-photo'); // แสดงปุ่มกลับมาหลังบันทึกเสร็จ
             }
         }
     </script>

@@ -7,8 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DaySplit">
+    <meta name="mobile-web-app-capable" content="yes">
     
-    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK7AAAACXBIWXMAAAsTAAALEwEAmpwYAAADXklEQVR4nO3bX0hTcRzH8e/ZOf+cc86p6ZAtXGZkJmES6X8vIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuqlpBe96E0vIerNoiB6E6IuIuql/wN8D8QfIu0u/AAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" href="https://r26.res.cloudinary.com/dts9v8p6t/image/upload/v1713067800/Gemini_Generated_Image_5gd5sr5gd5sr5gd5-removebg-preview_shz0as.png">
+    <link rel="icon" type="image/png" href="https://r26.res.cloudinary.com/dts9v8p6t/image/upload/v1713067800/Gemini_Generated_Image_5gd5sr5gd5sr5gd5-removebg-preview_shz0as.png">
 
     <title>DaySplit</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,11 +18,19 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;900&display=swap');
-        body { font-family: 'Prompt', sans-serif; background-color: #f7f9fc; color: #334155; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Prompt', sans-serif; 
+            background-color: #f8fafc; 
+            color: #334155; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         .safe-top { padding-top: env(safe-area-inset-top); }
-        .hide-in-photo { display: none !important; }
         .tap-effect:active { transform: scale(0.96); transition: 0.1s; }
+        .hide-in-photo { display: none !important; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* สไตล์รายการ */
+        .card-item { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
     </style>
 </head>
 <body class="p-4 sm:p-8 safe-top">
@@ -29,10 +39,11 @@
         
         <header class="flex justify-between items-center py-4">
             <div>
-                <h1 class="text-4xl font-[900] text-slate-900 tracking-tighter">Day<span class="text-blue-500">Split</span></h1>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Day<span class="text-blue-500">Split</span></h1>
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Bill & Receipt Manager</p>
             </div>
-            <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-200 font-bold">÷</div>
+            <img src="https://r26.res.cloudinary.com/dts9v8p6t/image/upload/v1713067800/Gemini_Generated_Image_5gd5sr5gd5sr5gd5-removebg-preview_shz0as.png" 
+                 class="w-14 h-14 rounded-2xl shadow-xl border-2 border-white">
         </header>
 
         <section class="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 border border-white space-y-4">
@@ -43,21 +54,21 @@
                 <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" 
                     class="flex-1 p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600">
                 
-                <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center">
+                <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center font-light">
                     +
                 </button>
             </div>
         </section>
 
-        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[35vh]">
+        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[35vh] px-1">
             </div>
         <p id="noData" class="text-center py-10 text-slate-300 text-sm italic">ยังไม่มีรายการบันทึก...</p>
 
-        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md">
+        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md border border-slate-50">
             <span class="font-bold text-slate-500 ml-2">หารกี่คน?</span>
             <div class="flex items-center gap-4 bg-slate-100 rounded-2xl p-1">
                 <button onclick="changePax(-1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">-</button>
-                <input type="number" id="paxValue" value="1" min="1" class="w-10 text-center font-black text-xl bg-transparent outline-none">
+                <input type="number" id="paxValue" value="1" min="1" class="w-10 text-center font-black text-xl bg-transparent outline-none text-slate-700">
                 <button onclick="changePax(1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">+</button>
             </div>
         </div>
@@ -66,11 +77,11 @@
             📋 ออกใบเสร็จสรุปยอด
         </button>
 
-        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3rem] shadow-2xl border-2 border-slate-50 relative overflow-hidden">
+        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
             
             <div class="text-center mb-8">
-                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic">FINAL BILL</h2>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">Receipt Summary</h2>
                 <p id="resDate" class="text-[9px] text-slate-400 font-bold mt-1 uppercase"></p>
             </div>
 
@@ -78,7 +89,7 @@
 
             <div class="space-y-6">
                 <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
-                    <span>ยอดรวมทั้งหมด</span>
+                    <span>ยอดรวม</span>
                     <span id="resSum" class="text-slate-900">0.00</span>
                 </div>
                 
@@ -88,13 +99,13 @@
                         <span id="resFinal" class="text-6xl font-[900] text-slate-900 tracking-tighter">0.00</span>
                         <span class="text-xl font-bold text-blue-500 italic">฿</span>
                     </div>
-                    <p class="text-[10px] text-blue-400 font-bold mt-2 uppercase tracking-widest">หาร <span id="resPaxDisplay">1</span> คน</p>
+                    <p class="text-[10px] text-blue-400 font-bold mt-2 uppercase tracking-widest italic">หาร <span id="resPaxDisplay">1</span> คน</p>
                 </div>
             </div>
 
-            <div id="actionButtons" class="mt-8 space-y-3">
-                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
-                    💾 บันทึกรูปภาพลงเครื่อง
+            <div id="actionButtons" class="mt-8 space-y-3 hide-in-photo">
+                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
+                    💾 บันทึกรูปใบเสร็จลงเครื่อง
                 </button>
                 <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูล</button>
             </div>
@@ -126,10 +137,10 @@
             }
             noData.style.display = 'none';
             container.innerHTML = myItems.map((item) => `
-                <div class="bg-white p-5 rounded-3xl shadow-sm flex items-center justify-between border border-slate-50">
+                <div class="card-item p-5 flex items-center justify-between">
                     <div>
                         <div class="font-bold text-slate-800">${item.title}</div>
-                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Checked</div>
+                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Confirmed</div>
                     </div>
                     <div class="flex items-center gap-4">
                         <span class="font-[900] text-blue-500 text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
@@ -176,13 +187,14 @@
 
         async function takeScreenshot() {
             const actions = document.getElementById('actionButtons');
-            actions.classList.add('hide-in-photo');
+            actions.style.display = 'none'; // ซ่อนปุ่มก่อนถ่าย
+            
             const element = document.getElementById('receiptUI');
             try {
                 const canvas = await html2canvas(element, {
                     scale: 3,
                     backgroundColor: "#ffffff",
-                    borderRadius: 48,
+                    borderRadius: 56,
                     useCORS: true
                 });
                 const link = document.createElement('a');
@@ -192,7 +204,7 @@
             } catch (err) {
                 alert('การบันทึกขัดข้อง');
             } finally {
-                actions.classList.remove('hide-in-photo');
+                actions.style.display = 'block'; // แสดงปุ่มกลับมา
             }
         }
     </script>

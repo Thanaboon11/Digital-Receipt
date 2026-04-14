@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DaySplit">
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+
+    <title>DaySplit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;900&display=swap');
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #334155; -webkit-tap-highlight-color: transparent; }
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .tap-effect:active { transform: scale(0.96); transition: 0.1s; }
+        .hide-in-photo { display: none !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 safe-top">
+
+    <div class="max-w-md mx-auto space-y-6">
+        
+        <header class="flex justify-between items-center py-4">
+            <div>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Day<span class="text-blue-500">Split</span></h1>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Bill & Receipt Manager</p>
+            </div>
+            <img src="icon.png" class="w-14 h-14 rounded-2xl shadow-lg border-2 border-white bg-white">
+        </header>
+
+        <section class="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 border border-white space-y-4">
+            <div class="space-y-4">
+                <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" 
+                    class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-semibold text-lg">
+                
+                <div class="flex items-center gap-3">
+                    <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" 
+                        class="flex-1 p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600">
+                    
+                    <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 min-w-[64px] rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center font-light">
+                        +
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div id="dataTable" class="space-y-3 overflow-y-auto max-h-[35vh]"></div>
+        <p id="noData" class="text-center py-10 text-slate-300 text-sm italic">ยังไม่มีรายการบันทึก...</p>
+
+        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md">
+            <span class="font-bold text-slate-500 ml-2">หารกี่คน?</span>
+            <div class="flex items-center gap-4 bg-slate-100 rounded-2xl p-1">
+                <button onclick="changePax(-1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">-</button>
+                <input type="number" id="paxValue" value="1" min="1" class="w-10 text-center font-black text-xl bg-transparent outline-none text-slate-700">
+                <button onclick="changePax(1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">+</button>
+            </div>
+        </div>
+
+        <button onclick="showFinalReceipt()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-[2.2rem] text-xl shadow-xl tap-effect">
+            📋 ออกใบเสร็จสรุปยอด
+        </button>
+
+        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">Receipt Summary</h2>
+                <p id="resDate" class="text-[9px] text-slate-400 font-bold mt-1 uppercase"></p>
+            </div>
+            <div id="receiptRows" class="space-y-3 mb-6 border-b border-dashed border-slate-200 pb-6"></div>
+            <div class="space-y-6">
+                <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
+                    <span>ยอดรวม</span>
+                    <span id="resSum" class="text-slate-900">0.00</span>
+                </div>
+                <div class="bg-blue-50 rounded-[2.5rem] p-8 text-center border border-blue-100">
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-1">จ่ายคนละ</p>
+                    <div class="flex items-center justify-center gap-1">
+                        <span id="resFinal" class="text-6xl font-[900] text-slate-900 tracking-tighter">0.00</span>
+                        <span class="text-xl font-bold text-blue-500 italic">฿</span>
+                    </div>
+                </div>
+            </div>
+            <div id="actionButtons" class="mt-8 space-y-3">
+                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
+                    💾 บันทึกรูปใบเสร็จ
+                </button>
+                <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูล</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let myItems = [];
+        function addToList() {
+            const t = document.getElementById('nodeTitle');
+            const p = document.getElementById('nodePrice');
+            if (!t.value || !p.value) return;
+            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) });
+            t.value = ''; p.value = ''; t.focus();
+            updateDisplay();
+            document.getElementById('receiptUI').classList.add('hidden');
+        }
+        function updateDisplay() {
+            const container = document.getElementById('dataTable');
+            const noData = document.getElementById('noData');
+            if (myItems.length === 0) {
+                container.innerHTML = '';
+                noData.style.display = 'block';
+                return;
+            }
+            noData.style.display = 'none';
+            container.innerHTML = myItems.map((item) => `
+                <div class="bg-white p-5 rounded-3xl shadow-sm flex items-center justify-between border border-slate-50 mb-3">
+                    <div>
+                        <div class="font-bold text-slate-800 text-lg">${item.title}</div>
+                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Recorded</div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-[900] text-blue-500 text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                        <button onclick="removeItem(${item.id})" class="text-slate-200 text-2xl px-2">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function removeItem(id) {
+            myItems = myItems.filter(x => x.id !== id);
+            updateDisplay();
+            document.getElementById('receiptUI').classList.add('hidden');
+        }
+        function changePax(v) {
+            const inp = document.getElementById('paxValue');
+            let res = parseInt(inp.value) + v;
+            if(res < 1) res = 1;
+            inp.value = res;
+        }
+        function showFinalReceipt() {
+            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ');
+            const pax = parseInt(document.getElementById('paxValue').value) || 1;
+            const total = myItems.reduce((s, i) => s + i.price, 0);
+            document.getElementById('receiptRows').innerHTML = myItems.map(i => `
+                <div class="flex justify-between text-sm font-bold">
+                    <span class="text-slate-500">${i.title}</span>
+                    <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                </div>
+            `).join('');
+            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2});
+            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2});
+            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH');
+            const ui = document.getElementById('receiptUI');
+            ui.classList.remove('hidden');
+            ui.scrollIntoView({ behavior: 'smooth' });
+        }
+        async function takeScreenshot() {
+            const actions = document.getElementById('actionButtons');
+            actions.classList.add('hide-in-photo');
+            const element = document.getElementById('receiptUI');
+            try {
+                const canvas = await html2canvas(element, { scale: 3, backgroundColor: "#ffffff", borderRadius: 56, useCORS: true });
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png");
+                link.download = `DaySplit-${Date.now()}.png`;
+                link.click();
+            } catch (err) {
+                alert('การบันทึกขัดข้อง');
+            } finally {
+                actions.classList.remove('hide-in-photo');
+            }
+        }
+    </script>
+</body>
+</html>

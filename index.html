@@ -4,124 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DaySplit">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
+    <meta name="apple-mobile-web-app-title" content="DaySplit"> 
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%233b82f6%22/><text y=%22.9em%22 x=%22.1em%22 font-size=%2270%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22bold%22>÷</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%233b82f6%22/><text y=%22.9em%22 x=%22.1em%22 font-size=%2270%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22bold%22>÷</text></svg>">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9431/9431053.png"> 
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/9431/9431053.png"> 
 
     <title>DaySplit</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> 
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap'); 
         body { 
             font-family: 'Prompt', sans-serif; 
-            background-color: #F1F5F9; 
+            background-color: #F8FAFC; 
             color: #334155; 
             -webkit-user-select: none;
             touch-action: manipulation;
-        }
-        .app-container { max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
+        } [cite: 2]
+        .app-container { max-width: 500px; margin: 0 auto; }
         .safe-area-inset { padding-top: env(safe-area-inset-top); }
         .hide-in-photo { display: none !important; }
+        .tap-effect:active { transform: scale(0.96); transition: 0.1s; }
         
-        /* สไตล์ปุ่มแบบเน้นกดง่ายบนมือถือ */
-        input, button { font-size: 16px !important; } /* ป้องกัน iOS Zoom เมื่อ focus input */
-        .tap-effect:active { transform: scale(0.95); transition: 0.1s; }
+        /* สไตล์ไอเทมรายการให้ดูพรีเมียมขึ้น */
+        .item-row { background: white; border-radius: 1.5rem; margin-bottom: 0.75rem; transition: all 0.2s; }
     </style>
 </head>
-<body class="p-4 safe-area-inset">
+<body class="p-5 safe-area-inset">
 
     <div class="app-container space-y-6">
         
-        <header class="flex justify-between items-center py-4">
+        <header class="flex justify-between items-center py-2">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Day<span class="text-blue-500">Split</span></h1>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Minimal Expense Manager</p>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Day<span class="text-blue-500">Split</span></h1> [cite: 4]
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Bill & Receipt Manager</p> [cite: 4]
             </div>
-            <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-200">÷</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/9431/9431053.png" class="w-12 h-12 shadow-lg rounded-2xl">
         </header>
 
-        <section class="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/60 border border-white space-y-4">
-            <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" 
-                class="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-semibold">
-            
-            <div class="flex gap-3">
-                <input type="number" id="nodePrice" inputmode="decimal" placeholder="ราคาเท่าไหร่?" 
-                    class="flex-1 p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-2xl text-blue-600">
+        <section class="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 border border-white space-y-4">
+            <div class="space-y-4">
+                <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" 
+                    [cite_start]class="w-full p-5 bg-slate-50 rounded-[1.5rem] border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-semibold text-lg"> [cite: 5]
                 
-                <button onclick="addToList()" class="bg-blue-500 text-white w-16 h-16 rounded-2xl text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center">
-                    +
-                </button>
+                <div class="flex gap-3">
+                    <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" 
+                        [cite_start]class="flex-1 p-5 bg-slate-50 rounded-[1.5rem] border-none focus:ring-2 focus:ring-blue-500/20 outline-none font-black text-3xl text-blue-600"> [cite: 5]
+                    
+                    <button onclick="addToList()" class="bg-blue-500 text-white w-20 h-20 rounded-[1.5rem] text-4xl shadow-lg shadow-blue-200 tap-effect flex items-center justify-center font-light">
+                        +
+                    </button> [cite: 6]
+                </div>
             </div>
         </section>
 
-        <section class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div id="dataTable" class="divide-y divide-slate-50 max-h-[40vh] overflow-y-auto">
-                </div>
-            <p id="noData" class="text-center py-12 text-slate-300 text-sm font-medium italic">ยังไม่มีรายการที่บันทึก</p>
-        </section>
+        <div id="dataTable" class="space-y-3 max-h-[35vh] overflow-y-auto px-1">
+            </div>
+        <p id="noData" class="text-center py-10 text-slate-300 text-sm font-medium italic">ยังไม่มีรายการบันทึก...</p> [cite: 8]
 
-        <div class="bg-slate-900 rounded-[2rem] p-5 flex items-center justify-between shadow-lg">
-            <span class="font-bold text-slate-400 ml-2">หารกี่คน?</span>
-            <div class="flex items-center gap-3 bg-white/10 rounded-xl p-1">
-                <button onclick="changePax(-1)" class="w-10 h-10 rounded-lg bg-white/10 text-white font-bold tap-effect">-</button>
-                <input type="number" id="paxValue" value="1" min="1" class="w-12 text-center font-bold text-xl text-white bg-transparent outline-none">
-                <button onclick="changePax(1)" class="w-10 h-10 rounded-lg bg-white/10 text-white font-bold tap-effect">+</button>
+        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-md border border-slate-50">
+            <span class="font-bold text-slate-500 ml-2">หารกี่คน?</span> [cite: 9]
+            <div class="flex items-center gap-4 bg-slate-100 rounded-2xl p-1">
+                <button onclick="changePax(-1)" class="w-12 h-12 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">-</button> [cite: 10]
+                <input type="number" id="paxValue" value="1" min="1" class="w-12 text-center font-black text-xl bg-transparent border-none outline-none text-slate-700"> [cite: 9]
+                <button onclick="changePax(1)" class="w-12 h-12 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">+</button> [cite: 10]
             </div>
         </div>
 
-        <button onclick="showFinalReceipt()" class="w-full bg-blue-500 text-white font-bold py-5 rounded-[2rem] text-xl shadow-xl shadow-blue-200 tap-effect">
-            สร้างใบเสร็จสรุปยอด
-        </button>
+        <button onclick="showFinalReceipt()" class="w-full bg-slate-900 text-white font-bold py-6 rounded-[2.2rem] text-xl shadow-2xl tap-effect">
+            📋 ออกใบเสร็จสรุปยอด
+        </button> [cite: 10]
 
-        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3rem] shadow-2xl border-2 border-slate-50 relative">
-            <div class="text-center mb-6">
-                <div class="w-12 h-1 bg-slate-200 mx-auto mb-4 rounded-full"></div>
-                <h2 class="text-2xl font-black text-slate-800 italic">BILL SUMMARY</h2>
-                <p id="resDate" class="text-[10px] text-slate-400 font-bold uppercase mt-1"></p>
+        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
+            
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic">FINAL BILL</h2>
+                <p id="resDate" class="text-[10px] text-slate-400 font-bold mt-1"></p> [cite: 11]
             </div>
 
-            <div id="receiptRows" class="space-y-3 mb-8 border-b border-dashed border-slate-100 pb-6"></div>
+            <div id="receiptRows" class="space-y-4 mb-8 border-b border-dashed border-slate-200 pb-8"></div> [cite: 11]
 
-            <div class="space-y-4 text-center">
-                <div class="flex justify-between text-xs font-bold text-slate-400 px-4 uppercase">
-                    <span>ยอดรวม / <span id="resPaxDisplay">1</span> คน</span>
-                    <span id="resSum" class="text-slate-800">0.00</span>
+            <div class="space-y-4">
+                <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
+                    <span>Total Amount</span>
+                    <span id="resSum" class="text-slate-900">0.00</span> [cite: 12, 13]
                 </div>
                 
-                <div class="py-4">
-                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">จ่ายคนละ</p>
+                <div class="bg-blue-50 rounded-3xl p-6 text-center">
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1">จ่ายคนละ</p> [cite: 14]
                     <div class="flex items-center justify-center gap-1">
-                        <span id="resFinal" class="text-6xl font-black text-slate-900 tracking-tighter">0.00</span>
-                        <span class="text-xl font-bold text-slate-400">฿</span>
+                        <span id="resFinal" class="text-6xl font-black text-slate-900 tracking-tighter">0.00</span> [cite: 14]
+                        <span class="text-xl font-bold text-blue-500 italic">฿</span>
                     </div>
+                    <p class="text-[10px] text-blue-400 font-bold mt-1">หารทั้งหมด <span id="resPaxDisplay">1</span> คน</p>
                 </div>
             </div>
 
             <div id="actionButtons" class="mt-8 space-y-3">
-                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 tap-effect">
+                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl shadow-lg tap-effect flex items-center justify-center gap-2">
                     💾 บันทึกรูปภาพใบเสร็จ
                 </button>
-                <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase hover:text-red-400">Reset ทั้งหมด</button>
+                <button onclick="window.location.reload()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-red-400 text-center block">ล้างข้อมูลทั้งหมด</button> [cite: 15]
             </div>
         </div>
 
     </div>
 
     <script>
-        let myItems = [];
+        let myItems = []; [cite: 15]
 
         function addToList() {
             const t = document.getElementById('nodeTitle');
             const p = document.getElementById('nodePrice');
-            if (!t.value || !p.value) return;
+            if (!t.value || !p.value) return; [cite: 17]
 
-            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) });
-            t.value = ''; p.value = ''; t.focus();
+            myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) }); [cite: 17]
+            t.value = ''; p.value = ''; t.focus(); [cite: 18]
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
@@ -131,53 +133,53 @@
             const noData = document.getElementById('noData');
             if (myItems.length === 0) {
                 container.innerHTML = '';
-                noData.style.display = 'block';
+                noData.style.display = 'block'; [cite: 20]
                 return;
             }
-            noData.style.display = 'none';
+            noData.style.display = 'none'; [cite: 21]
             container.innerHTML = myItems.map((item) => `
-                <div class="flex items-center justify-between p-5">
+                <div class="item-row flex items-center justify-between p-5 shadow-sm border border-slate-50">
                     <div>
                         <div class="font-bold text-slate-800">${item.title}</div>
-                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Confirmed</div>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Recorded</div> [cite: 22]
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="font-black text-blue-500 text-lg">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
-                        <button onclick="removeItem(${item.id})" class="text-slate-200 text-xl">✕</button>
+                        <span class="font-black text-blue-500 text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span> [cite: 22]
+                        <button onclick="removeItem(${item.id})" class="text-slate-200 text-2xl px-2">✕</button> [cite: 23]
                     </div>
                 </div>
             `).join('');
         }
 
         function removeItem(id) {
-            myItems = myItems.filter(x => x.id !== id);
+            myItems = myItems.filter(x => x.id !== id); [cite: 24]
             updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
 
         function changePax(v) {
             const inp = document.getElementById('paxValue');
-            let res = parseInt(inp.value) + v;
-            if(res < 1) res = 1;
+            let res = parseInt(inp.value) + v; [cite: 26]
+            if(res < 1) res = 1; [cite: 26]
             inp.value = res;
         }
 
         function showFinalReceipt() {
-            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ');
-            const pax = parseInt(document.getElementById('paxValue').value) || 1;
-            const total = myItems.reduce((s, i) => s + i.price, 0);
+            if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อน'); [cite: 27]
+            const pax = parseInt(document.getElementById('paxValue').value) || 1; [cite: 28]
+            const total = myItems.reduce((s, i) => s + i.price, 0); [cite: 28]
             
             document.getElementById('receiptRows').innerHTML = myItems.map(i => `
                 <div class="flex justify-between text-sm font-bold">
-                    <span class="text-slate-500">${i.title}</span>
-                    <span class="text-slate-800">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                    <span class="text-slate-500 font-medium">${i.title}</span> [cite: 29]
+                    <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span> [cite: 29]
                 </div>
             `).join('');
             
-            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resPaxDisplay').innerText = pax;
-            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH');
+            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2}); [cite: 30]
+            document.getElementById('resPaxDisplay').innerText = pax; [cite: 30]
+            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2}); [cite: 30]
+            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH'); [cite: 31]
 
             const ui = document.getElementById('receiptUI');
             ui.classList.remove('hidden');
@@ -200,7 +202,7 @@
                 link.download = `DaySplit-${Date.now()}.png`;
                 link.click();
             } catch (err) {
-                alert('เกิดข้อผิดพลาดในการบันทึก');
+                alert('การบันทึกขัดข้อง ลองแคปหน้าจอแทนนะครับ');
             } finally {
                 actions.classList.remove('hide-in-photo');
             }

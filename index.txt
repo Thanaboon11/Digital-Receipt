@@ -3,208 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DaySplit Pro</title>
+    <title>DaySplit - บิลมาตรฐาน</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;900&display=swap');
-        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #334155; -webkit-tap-highlight-color: transparent; }
-        .safe-top { padding-top: env(safe-area-inset-top); }
-        .tap-effect:active { transform: scale(0.96); transition: 0.1s; }
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;900&display=swap');
+        body { font-family: 'Prompt', sans-serif; background: #f4f7f9; color: #1e293b; }
+        
+        .standard-bill {
+            background: #ffffff;
+            padding: 40px 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 12px solid #1e293b;
+            position: relative;
+        }
+        .standard-bill::after {
+            content: ""; position: absolute; bottom: -8px; left: 0; right: 0; height: 8px;
+            background-image: radial-gradient(circle at 10px 0, #ffffff 10px, transparent 0);
+            background-size: 20px 10px;
+        }
         .hide-in-photo { display: none !important; }
-        .input-card { background: white; border-radius: 2.5rem; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05); }
-        .price-input { flex-grow: 1; min-width: 0; background-color: #f1f5f9; border-radius: 1.5rem; padding: 1rem; font-weight: 900; font-size: 1.875rem; color: #2563eb; outline: none; }
-        .add-button { width: 4rem; height: 4rem; flex-shrink: 0; background-color: #3b82f6; color: white; border-radius: 1.5rem; font-size: 2.25rem; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
-<body class="p-4 safe-top">
+<body class="p-5">
 
     <div class="max-w-md mx-auto space-y-6">
-        <header class="flex justify-between items-center py-4">
-            <div>
-                <h1 class="text-3xl font-black text-slate-900">Day<span class="text-blue-500">Split</span></h1>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Premium Bill Manager</p>
-            </div>
+        <header class="flex justify-between items-center">
+            <h1 class="text-2xl font-black text-slate-800">Day<span class="text-blue-600">Split</span></h1>
+            <div id="statusDot" class="w-3 h-3 rounded-full bg-red-500 border-2 border-white shadow-sm"></div>
         </header>
 
-        <section class="input-card border border-white space-y-4">
+        <section class="bg-white p-6 rounded-[2rem] shadow-sm space-y-4">
             <input type="hidden" id="editId">
-            <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" class="w-full p-4 bg-slate-100 rounded-2xl border-none outline-none font-semibold">
-            <div class="flex items-center gap-3">
-                <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" class="price-input">
-                <button onclick="saveItem()" id="btnSave" class="add-button tap-effect">+</button>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">รายการค่าใช้จ่าย</label>
+                <input type="text" id="nodeTitle" placeholder="จ่ายค่าอะไร?" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-semibold text-slate-700 focus:bg-blue-50 transition-colors">
+            </div>
+            <div class="flex items-end gap-4 pr-1">
+                <div class="flex-grow space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">จำนวนเงิน (บาท)</label>
+                    <input type="number" id="nodePrice" inputmode="decimal" placeholder="0.00" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-2xl text-blue-600 focus:bg-blue-50 transition-colors">
+                </div>
+                <button onclick="saveItem()" id="btnSave" class="w-14 h-14 bg-blue-600 text-white rounded-2xl text-3xl shadow-lg shadow-blue-100 tap-effect flex-shrink-0 mb-0.5">+</button>
             </div>
         </section>
 
-        <div id="dataTable" class="space-y-3"></div>
-        <p id="noData" class="text-center py-10 text-slate-300 text-sm italic">ยังไม่มีรายการบันทึก...</p>
+        <div id="dailyContainer" class="space-y-5"></div>
 
-        <div class="bg-white rounded-[2rem] p-5 flex items-center justify-between shadow-sm border border-slate-100">
-            <span class="font-bold text-slate-500 ml-2">หารกี่คน?</span>
-            <div class="flex items-center gap-4 bg-slate-100 rounded-2xl p-1">
-                <button onclick="changePax(-1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">-</button>
-                <input type="number" id="paxValue" value="1" min="1" class="w-10 text-center font-black text-xl bg-transparent outline-none text-slate-700">
-                <button onclick="changePax(1)" class="w-10 h-10 rounded-xl bg-white shadow-sm text-blue-500 font-bold tap-effect">+</button>
+        <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+            <span class="font-bold text-slate-600">หารกี่คน?</span>
+            <div class="flex items-center gap-4">
+                <button onclick="changePax(-1)" class="w-8 h-8 bg-slate-100 rounded-lg text-blue-600 font-bold">-</button>
+                <input type="number" id="paxValue" value="1" min="1" class="w-8 text-center font-black text-lg outline-none">
+                <button onclick="changePax(1)" class="w-8 h-8 bg-slate-100 rounded-lg text-blue-600 font-bold">+</button>
             </div>
         </div>
 
-        <button onclick="showFinalReceipt()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-[2.2rem] text-xl shadow-xl tap-effect">
-            📋 ออกใบเสร็จสรุปยอด
-        </button>
+        <button onclick="showReceipt()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl text-lg">📋 ออกใบเสร็จ</button>
 
-        <div id="receiptUI" class="hidden bg-white p-8 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-3 bg-blue-500"></div>
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-black text-slate-800 tracking-tighter italic">FINAL BILL</h2>
-                <p id="resDate" class="text-[10px] text-slate-400 font-bold mt-1 uppercase"></p>
-            </div>
-            <div id="receiptRows" class="space-y-4 mb-6 border-b border-dashed border-slate-200 pb-6"></div>
-            <div class="space-y-6">
-                <div class="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">
-                    <span>ยอดรวมทั้งหมด</span>
-                    <span id="resSum" class="text-slate-900">0.00</span>
-                </div>
-                <div class="bg-blue-50 rounded-[2.5rem] p-8 text-center border border-blue-100">
-                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1">จ่ายคนละ</p>
-                    <div class="flex items-center justify-center gap-1">
-                        <span id="resFinal" class="text-6xl font-black text-slate-900 tracking-tighter">0.00</span>
-                        <span class="text-xl font-bold text-blue-500 italic">฿</span>
+        <div id="receiptUI" class="hidden my-10 p-1">
+            <div class="standard-bill space-y-8">
+                <div class="text-center space-y-3">
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">ใบเสร็จนะจ๊ะ</h2>
+                    <div class="bg-slate-50 py-3 px-4 rounded-xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">ขอบคุณที่จ่ายนะจ๊ะ</p>
+                        <p id="resDate" class="text-lg font-black text-slate-800 leading-tight"></p>
                     </div>
                 </div>
+
+                <div class="border-t border-b border-dashed border-slate-300 py-6 space-y-3">
+                    <div id="receiptRows" class="space-y-3"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-bold text-slate-400">
+                        <span>ยอดรวมทั้งหมด</span>
+                        <span id="resSum">฿0.00</span>
+                    </div>
+                    
+                    <div class="pt-4 flex justify-between items-center border-t border-slate-50">
+                        <span class="text-lg font-black text-slate-800">ยอดสุทธิคนละ</span>
+                        <div class="text-right">
+                            <span id="resFinal" class="text-5xl font-black text-blue-600 tracking-tighter">0.00</span>
+                            <span class="text-sm font-bold text-blue-600 ml-1">บาท</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-4 opacity-30">
+                    <p class="text-[8px] font-black tracking-[0.5em]">--- ธนบูรณ์ ---</p>
+                </div>
             </div>
-            <div id="actionButtons" class="mt-8 space-y-3">
-                <button onclick="takeScreenshot()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg tap-effect">💾 บันทึกรูปภาพ</button>
-                <button onclick="clearAllData()" class="w-full py-2 text-[10px] font-bold text-red-400 uppercase tracking-widest text-center block">ล้างข้อมูลทั้งหมด</button>
+
+            <div id="actionButtons" class="mt-10 space-y-3">
+                <button onclick="takeScreenshot()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg">💾 บันทึกรูปภาพบิล</button>
+                <button onclick="clearData()" class="w-full py-2 text-[10px] font-bold text-red-400 uppercase text-center block opacity-50">ล้างข้อมูลทั้งหมด</button>
             </div>
         </div>
     </div>
 
     <script>
-        let myItems = JSON.parse(localStorage.getItem('daySplitItems')) || [span_5](start_span)[];[span_5](end_span)
-
-        window.onload = () => {
-            [span_6](start_span)updateDisplay();[span_6](end_span)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxm5hucIGKQPSl0VQzlbPLfimCLR_WCFA",
+            authDomain: "personal-countdown-202de.firebaseapp.com",
+            databaseURL: "https://personal-countdown-202de-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "personal-countdown-202de",
+            storageBucket: "personal-countdown-202de.firebasestorage.app",
+            messagingSenderId: "689677907000",
+            appId: "1:689677907000:web:aafe63dfcf086ecd81e2cd"
         };
 
-        function saveToStorage() {
-            [span_7](start_span)localStorage.setItem('daySplitItems', JSON.stringify(myItems));[span_7](end_span)
-        }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('daysplit_shared');
+
+        firebase.database().ref('.info/connected').on('value', snap => {
+            document.getElementById('statusDot').style.background = snap.val() ? '#10b981' : '#ef4444';
+        });
 
         function saveItem() {
-            const t = document.getElementById('nodeTitle');
-            const p = document.getElementById('nodePrice');
-            [span_8](start_span)const editId = document.getElementById('editId').value;[span_8](end_span)
-
+            const t = document.getElementById('nodeTitle'), p = document.getElementById('nodePrice'), e = document.getElementById('editId');
             if (!t.value || !p.value) return;
-
-            if (editId) {
-                const index = myItems.findIndex(i => i.id == editId);
-                myItems[index].title = t.value;
-                myItems[index].price = parseFloat(p.value);
-                document.getElementById('editId').value = '';
-                document.getElementById('btnSave').innerText = '+';
-            } else {
-                myItems.push({ id: Date.now(), title: t.value, price: parseFloat(p.value) });
-            }
-
+            const dateStr = new Date().toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'2-digit'});
+            const itemData = { title: t.value, price: parseFloat(p.value), date: dateStr };
+            if (e.value) { db.child(e.value).update(itemData); e.value = ''; document.getElementById('btnSave').innerText = '+'; }
+            else { db.push(itemData); }
             t.value = ''; p.value = ''; t.focus();
-            saveToStorage();
-            updateDisplay();
             document.getElementById('receiptUI').classList.add('hidden');
         }
 
-        function editItem(id) {
-            const item = myItems.find(i => i.id === id);
+        db.on('value', snap => {
+            const data = snap.val() || {};
+            const items = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            window.allItems = items;
+            const container = document.getElementById('dailyContainer');
+            if (items.length === 0) { container.innerHTML = ''; return; }
+            const groups = items.reduce((acc, i) => { (acc[i.date] = acc[i.date] || []).push(i); return acc; }, {});
+            container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => `
+                <div class="space-y-2">
+                    <div class="text-[9px] font-black text-slate-400 ml-2 uppercase tracking-widest">${date}</div>
+                    ${groups[date].map(i => `
+                        <div onclick="prepEdit('${i.id}')" class="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center cursor-pointer active:scale-95 transition-all">
+                            <div><div class="font-bold text-slate-700 text-sm">${i.title}</div><div class="text-blue-600 font-black">฿${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</div></div>
+                            <button onclick="event.stopPropagation(); deleteItem('${i.id}')" class="text-slate-200 text-xl px-2">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        });
+
+        function prepEdit(id) {
+            const item = window.allItems.find(x => x.id === id);
             document.getElementById('nodeTitle').value = item.title;
             document.getElementById('nodePrice').value = item.price;
-            document.getElementById('editId').value = item.id;
-            [span_9](start_span)document.getElementById('btnSave').innerText = '✓';[span_9](end_span)
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('editId').value = id;
+            document.getElementById('btnSave').innerText = '✓';
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        function removeItem(id) {
-            if(confirm('ลบรายการนี้ใช่หรือไม่?')) {
-                myItems = myItems.filter(x => x.id !== id);
-                saveToStorage();
-                updateDisplay();
-                document.getElementById('receiptUI').classList.add('hidden');
-            }
-        }
+        function deleteItem(id) { if(confirm('ลบรายการนี้?')) db.child(id).remove(); }
+        function clearData() { if(confirm('ล้างข้อมูลทั้งหมด?')) db.remove(); }
+        function changePax(v) { let i = document.getElementById('paxValue'); i.value = Math.max(1, parseInt(i.value) + v); }
 
-        function updateDisplay() {
-            const container = document.getElementById('dataTable');
-            [span_10](start_span)const noData = document.getElementById('noData');[span_10](end_span)
+        function showReceipt() {
+            if (!window.allItems || window.allItems.length === 0) return alert('ไม่มีรายการ');
+            const p = parseInt(document.getElementById('paxValue').value) || 1, 
+                  t = window.allItems.reduce((s, i) => s + i.price, 0);
             
-            if (myItems.length === 0) {
-                container.innerHTML = '';
-                noData.style.display = 'block';
-                return;
-            }
-            noData.style.display = 'none';
-            container.innerHTML = myItems.map((item) => `
-                <div class="bg-white p-5 rounded-3xl shadow-sm flex items-center justify-between border border-slate-50 mb-2">
-                    <div onclick="editItem(${item.id})" class="flex-grow cursor-pointer">
-                        <div class="font-bold text-slate-800 text-lg">${item.title}</div>
-                        <div class="text-blue-500 font-black text-xl">${item.price.toLocaleString(undefined,{minimumFractionDigits:2})}</div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="editItem(${item.id})" class="text-slate-300 text-sm font-bold px-2">แก้ไข</button>
-                        <button onclick="removeItem(${item.id})" class="text-red-200 text-2xl px-2">✕</button>
-                    </div>
-                </div>
-            [span_11](start_span)`).join('');[span_11](end_span)
-        }
-
-        function changePax(v) {
-            const inp = document.getElementById('paxValue');
-            [span_12](start_span)let res = parseInt(inp.value) + v;[span_12](end_span)
-            if(res < 1) res = 1;
-            inp.value = res;
-        }
-
-        function showFinalReceipt() {
-            [span_13](start_span)if (myItems.length === 0) return alert('กรุณาเพิ่มรายการก่อนครับ');[span_13](end_span)
-            const pax = parseInt(document.getElementById('paxValue').value) || 1;
-            [span_14](start_span)const total = myItems.reduce((s, i) => s + i.price, 0);[span_14](end_span)
+            document.getElementById('receiptRows').innerHTML = window.allItems.map(i => `
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500">${i.title}</span>
+                    <span class="text-sm font-black text-slate-800">฿${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
+                </div>`).join('');
             
-            document.getElementById('receiptRows').innerHTML = myItems.map(i => `
-                <div class="flex justify-between text-sm font-bold">
-                    <span class="text-slate-500">${i.title}</span>
-                    <span class="text-slate-900">${i.price.toLocaleString(undefined,{minimumFractionDigits:2})}</span>
-                </div>
-            [span_15](start_span)`).join('');[span_15](end_span)
-
-            document.getElementById('resSum').innerText = total.toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resFinal').innerText = (total / pax).toLocaleString(undefined,{minimumFractionDigits:2});
-            document.getElementById('resDate').innerText = new Date().toLocaleString('th-TH');
+            document.getElementById('resSum').innerText = '฿' + t.toLocaleString(undefined,{minimumFractionDigits:2});
+            document.getElementById('resFinal').innerText = (t/p).toLocaleString(undefined,{minimumFractionDigits:2});
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('resDate').innerText = `${dateStr} | ${timeStr} น.`;
+            
             document.getElementById('receiptUI').classList.remove('hidden');
-            [span_16](start_span)document.getElementById('receiptUI').scrollIntoView({ behavior: 'smooth' });[span_16](end_span)
-        }
-
-        function clearAllData() {
-            if(confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) {
-                myItems = [];
-                localStorage.removeItem('daySplitItems');
-                updateDisplay();
-                document.getElementById('receiptUI').classList.add('hidden');
-            }
+            document.getElementById('receiptUI').scrollIntoView({behavior: 'smooth'});
         }
 
         async function takeScreenshot() {
-            const actions = document.getElementById('actionButtons');
-            [span_17](start_span)actions.classList.add('hide-in-photo');[span_17](end_span)
-            const element = document.getElementById('receiptUI');
-            try {
-                const canvas = await html2canvas(element, { scale: 3, backgroundColor: "#ffffff", borderRadius: 56 });
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL("image/png");
-                [span_18](start_span)link.download = `DaySplit-${Date.now()}.png`;[span_18](end_span)
-                link.click();
-            } catch (err) {
-                alert('การบันทึกขัดข้อง');
-            } finally {
-                [span_19](start_span)actions.classList.remove('hide-in-photo');[span_19](end_span)
-            }
+            const b = document.getElementById('actionButtons'); b.classList.add('hide-in-photo');
+            const canvas = await html2canvas(document.querySelector('.standard-bill'), { scale: 3 });
+            const a = document.createElement('a'); a.href = canvas.toDataURL(); a.download = `Bill.png`; a.click();
+            b.classList.remove('hide-in-photo');
         }
     </script>
 </body>
